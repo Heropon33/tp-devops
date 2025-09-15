@@ -2,23 +2,38 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Checkout GitHub repo') {
             steps {
-                echo 'Compilation en cours...'
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Heropon33/tp-devops']])
             }
         }
-
-        stage('Test') {
+        
+        stage('Build and Tag Docker Image') {
             steps {
-                echo 'Exécution des tests...'
+                script {
+                    sh 'docker build . -t hellodocker'
+                    sh 'docker tag hellodocker heropon33/hellodocker'
+                }
             }
         }
-
-        stage('Deploy') {
+        
+        stage('Push the Docker Image to DockerHUb') {
             steps {
-                echo 'Déploiement en cours...'
+                script {
+                    withCredentials([string(credentialsId: 'docker_token', variable: 'docker_token')]) {
+                    sh 'docker login -u heropon33 -p ${docker_hub}'
+}
+                    sh 'docker push heropon33/hellodocker'
+                }
+            }
+        }
+        
+        stage('Deploy deployment and service file') {
+            steps {
+                script {
+                    kubernetesDeploy configs: 'deploymentsvc.yaml', kubeconfigId: 'kubeconfig'
+                }
             }
         }
     }
 }
-
