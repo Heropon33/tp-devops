@@ -6,16 +6,16 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: hellodocker-deployment
+      app: hellodocker
   template:
     metadata:
       labels:
-        app: hellodocker-deployment
+        app: hellodocker
     spec:
       containers:
-      - name: hellodocker-deployment
-        image: heropon33/hellodocker:latest
-        imagePullPolicy: Always
+      - name: hellodocker
+        image: heropon33/hellodocker:BUILD_NUMBER
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
 
@@ -26,7 +26,7 @@ metadata:
   name: hellodocker-service
 spec:
   selector:
-    app: hellodocker-deployment
+    app: hellodocker
   ports:
   - protocol: TCP
     port: 80
