@@ -34,7 +34,6 @@ pipeline {
                     withKubeConfig([credentialsId: 'kubeconfig']) {
                     sh 'kubectl apply -f deploymentsvc.yaml'
                     }
-                    #kubernetesDeploy configs: 'deploymentsvc.yaml', kubeconfigId: 'kubeconfig'
                 }
             }
         }
