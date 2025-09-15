@@ -30,6 +30,7 @@ pipeline {
                             docker login -u heropon33 -p ${DOCKER_TOKEN}
                             docker push ${env.IMAGE_TAG}
                         """
+                    }
                 }
             }
         }
