@@ -17,7 +17,7 @@ pipeline {
             steps {
                 script {
                     env.IMAGE_TAG = "${IMAGE_NAME}:${env.BUILD_NUMBER}"
-                    sh 'docker build . -t ${env.IMAGE_TAG}'
+                    sh "docker build . -t ${env.IMAGE_TAG}"
                 }
             }
         }
@@ -39,13 +39,13 @@ pipeline {
             steps {
                 script {
                     withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
-                        sh '''
+                        sh """
                             mkdir -p ~/.kube
-                            cp $KUBECONFIG_FILE ~/.kube/config
+                            cp \$KUBECONFIG_FILE ~/.kube/config
                             kubectl get nodes
                             kubectl set image deployment/hellodocker-deployment hellodocker=${env.IMAGE_TAG} --record
                             kubectl rollout status deployment/hellodocker-deployment
-                        '''
+                        """
                     }
                 }
             }
