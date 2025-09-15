@@ -43,6 +43,7 @@ pipeline {
                             mkdir -p ~/.kube
                             cp \$KUBECONFIG_FILE ~/.kube/config
                             kubectl get nodes
+                            kubectl get deployment hellodocker-deployment || kubectl apply -f deploymentsvc.yaml
                             kubectl set image deployment/hellodocker-deployment hellodocker=${env.IMAGE_TAG} --record
                             kubectl rollout status deployment/hellodocker-deployment
                         """
