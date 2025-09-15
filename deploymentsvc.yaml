@@ -18,7 +18,6 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
-          hostPort: 80
 
 ---
 apiVersion: v1
