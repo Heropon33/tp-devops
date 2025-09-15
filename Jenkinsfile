@@ -21,7 +21,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'docker_token', variable: 'docker_token')]) {
-                    sh 'docker login -u heropon33 -p ${docker_hub}'
+                    sh 'docker login -u heropon33 -p ${docker_token}'
 }
                     sh 'docker push heropon33/hellodocker'
                 }
