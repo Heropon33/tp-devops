@@ -1,18 +1,23 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = "heropon33/hellodocker"
+    }
+
     stages {
         stage('Checkout GitHub repo') {
             steps {
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Heropon33/tp-devops']])
+                checkout scmGit(branches: [[name: '*/main']], 
+                userRemoteConfigs: [[url: 'https://github.com/Heropon33/tp-devops']])
             }
         }
 
         stage('Build and Tag Docker Image') {
             steps {
                 script {
-                    sh 'docker build . -t hellodocker'
-                    sh 'docker tag hellodocker heropon33/hellodocker'
+                    env.IMAGE_TAG = "${IMAGE_NAME}:${env.BUILD_NUMBER}"
+                    sh 'docker build . -t ${env.IMAGE_TAG}'
                 }
             }
         }
@@ -20,10 +25,11 @@ pipeline {
         stage('Push the Docker Image to DockerHUb') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'docker_token', variable: 'docker_token')]) {
-                    sh 'docker login -u heropon33 -p ${docker_token}'
-}
-                    sh 'docker push heropon33/hellodocker'
+                    withCredentials([string(credentialsId: 'docker_token', variable: 'DOCKER_TOKEN')]) {
+                        sh """
+                            docker login -u heropon33 -p ${DOCKER_TOKEN}
+                            docker push ${env.IMAGE_TAG}
+                        """
                 }
             }
         }
@@ -36,7 +42,8 @@ pipeline {
                             mkdir -p ~/.kube
                             cp $KUBECONFIG_FILE ~/.kube/config
                             kubectl get nodes
-                            kubectl apply -f deploymentsvc.yaml
+                            kubectl set image deployment/hellodocker-deployment hellodocker=${env.IMAGE_TAG} --record
+                            kubectl rollout status deployment/hellodocker-deployment
                         '''
                     }
                 }
@@ -44,3 +51,4 @@ pipeline {
         }
     }
 }
+
