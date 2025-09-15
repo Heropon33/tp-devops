@@ -7,7 +7,7 @@ pipeline {
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Heropon33/tp-devops']])
             }
         }
-        
+
         stage('Build and Tag Docker Image') {
             steps {
                 script {
@@ -16,7 +16,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Push the Docker Image to DockerHUb') {
             steps {
                 script {
@@ -27,11 +27,17 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Deploy deployment and service file') {
             steps {
                 script {
-                    sh 'kubectl apply -f deploymentsvc.yaml'
+                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
+                        sh '''
+                            mkdir -p ~/.kube
+                            cp $KUBECONFIG_FILE ~/.kube/config
+                            kubectl get nodes
+                            kubectl apply -f deploymentsvc.yaml
+                        '''
                 }
             }
         }
