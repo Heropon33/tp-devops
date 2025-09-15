@@ -38,6 +38,7 @@ pipeline {
                             kubectl get nodes
                             kubectl apply -f deploymentsvc.yaml
                         '''
+                    }
                 }
             }
         }
